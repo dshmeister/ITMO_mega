@@ -74,10 +74,16 @@ query_4 = """
 Как поступить в ai talent hub?
 """
 query_5 = """
-новости за 20-30 января 2025 года по итмо
+В каком году Университет ИТМО был включён в число Национальных исследовательских университетов России?\n1. 2007\n2. 2009\n3. 2011\n4. 2015
+"""
+
+# Как выиграть в JMLC? ai talent hub
+
+query_6 = """
+Что такое мегашкола
 """
 print('*_' * 100)
-text = tavily_request(query_5)
+text = tavily_request(query_6)
 #print(text)
-qwen_response = qwen_request_gpu6(text, query_5)
+qwen_response = qwen_request_gpu6(text, query_6)
 print(qwen_response)
