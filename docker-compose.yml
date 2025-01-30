@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  itmo-query-extraction-app:
+    image: query_extraction
+    container_name: query_extraction
+    ports:
+      - "13001:13001"
+    env_file:
+      - .env
+#networks:
+#  default:
+#    name: ainergy-net
