@@ -42,17 +42,17 @@ services:
     - ssh-keyscan $PROD_SERVER_IP >> ~/.ssh/known_hosts
     - ssh-keyscan $TEST_SERVER_IP >> ~/.ssh/known_hosts
 
-#.test: &test
-#  stage: test
-#  tags:
-#    - ai-docker
-#  before_script:
-#    - eval "$(ssh-agent -s)"
-#    - ssh-add <(echo "$SSH_KEY" | base64 -d)
-#    - 'mkdir -p ~/.ssh'
-#    - 'chmod 700 ~/.ssh'
-#    - ssh-keyscan $TEST_SERVER_IP >> ~/.ssh/known_hosts
-#    - ssh-keyscan $PROD_SERVER_IP >> ~/.ssh/known_hosts
+.test: &test
+  stage: test
+  tags:
+    - ai-docker
+  before_script:
+    - eval "$(ssh-agent -s)"
+    - ssh-add <(echo "$SSH_KEY" | base64 -d)
+    - 'mkdir -p ~/.ssh'
+    - 'chmod 700 ~/.ssh'
+    - ssh-keyscan $TEST_SERVER_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan $PROD_SERVER_IP >> ~/.ssh/known_hosts
 
 build-job-app:
   <<: *build
@@ -63,13 +63,13 @@ build-job-app:
 delivery-test:
   <<: *delivery
   script:
-    - 'scp -i <(echo "$SSH_KEY" | base64 -d) docker-compose-dev.yml $TEST_SERVER:~/ticket-classification-dev/docker-compose.yml'
-    - 'scp -i <(echo "$SSH_KEY" | base64 -d) $ENV_FILE_TEST $TEST_SERVER:~/ticket-classification-dev/.env'
+    - 'scp -i <(echo "$SSH_KEY" | base64 -d) docker-compose-dev.yml $TEST_SERVER:~/itmo-query-dev/docker-compose.yml'
+    - 'scp -i <(echo "$SSH_KEY" | base64 -d) $ENV_FILE_TEST $TEST_SERVER:~/itmo-query-dev/.env'
     - >
       ssh $TEST_SERVER "
       echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin &&
       docker pull $CI_REGISTRY_IMAGE:app &&
-      docker tag $CI_REGISTRY_IMAGE:app ticket_classification
+      docker tag $CI_REGISTRY_IMAGE:app itmo_query
       "
 
 
@@ -78,7 +78,7 @@ deploy-test:
   script:
     - >
       ssh $TEST_SERVER "
-      cd ticket-classification-dev &&
+      cd itmo-query-dev &&
       docker compose up -d
       "
 
@@ -86,21 +86,21 @@ deploy-test:
 #  <<: *test
 #  script:
 #    - echo "Checking /app directory"
-#    - ssh $TEST_SERVER 'docker exec -e PYTHONPATH=/app ticket_classification ls -al /app'
+#    - ssh $TEST_SERVER 'docker exec -e PYTHONPATH=/app itmo_query ls -al /app'
 #    - echo "Running tests"
-#    - ssh $TEST_SERVER 'docker exec -e PYTHONPATH=/app/tests receipt_extract pytest'
+#    - ssh $TEST_SERVER 'docker exec -e PYTHONPATH=/app/tests itmo_query pytest'
 
 
 delivery-prod:
   <<: *delivery
   script:
-    - 'scp -i <(echo "$SSH_KEY" | base64 -d) docker-compose-dev.yml $PROD_SERVER:~/ticket-classification-prod/docker-compose.yml'
-    - 'scp -i <(echo "$SSH_KEY" | base64 -d) $ENV_FILE_PROD $PROD_SERVER:~/ticket-classification-prod/.env'
+    - 'scp -i <(echo "$SSH_KEY" | base64 -d) docker-compose-dev.yml $PROD_SERVER:~/itmo-query-prod/docker-compose.yml'
+    - 'scp -i <(echo "$SSH_KEY" | base64 -d) $ENV_FILE_PROD $PROD_SERVER:~/itmo-query-prod/.env'
     - >
       ssh $PROD_SERVER "
       echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin &&
       docker pull $CI_REGISTRY_IMAGE:app &&
-      docker tag $CI_REGISTRY_IMAGE:app ticket_classification &&
+      docker tag $CI_REGISTRY_IMAGE:app itmo_query &&
       "
   only:
     - main
@@ -110,7 +110,7 @@ deploy-prod:
   script:
     - >
       ssh $PROD_SERVER "
-      cd ticket-classification-prod &&
+      cd itmo-query-prod &&
       docker compose up -d
       "
   only:
