@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from ...core.config.logger import logger
 from ...core.config.schemas import JSONOutput
 from ...src.instance import get_search, get_llm
-from ...src.utils import process_query
+from ...src.utils import process_query, extract_json
 import json
 
 # Initializing APIRouter
@@ -20,14 +20,17 @@ async def ticket_response(
         logger.info(msg=f"Processing query: {query}")
 
         response_llm = await process_query(query, id)
-        response_corrected = r"{}".format(response_llm)
 
-        # Преобразуем в JSON
-        response_data = json.loads(response_corrected)
+        logger.info(msg=f"RESPONSE_LLM: {response_llm}")
+
+        # Преобразуем ответ в JSON
+        response_data = extract_json(response_llm)
+
+        # Проверяем, что JSON корректный
+        if "error" in response_data:
+            raise ValueError(response_data["error"])
 
         logger.info(msg='Processed SUCCESS.')
-
-
         return response_data
 
     except Exception as e:

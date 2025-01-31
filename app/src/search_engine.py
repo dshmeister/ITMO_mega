@@ -22,7 +22,7 @@ class AsyncTavilySearch:
         :return: Ответ от API в формате JSON.
         """
         try:
-            response = await self.tavily_client.search(query)  # Асинхронный вызов
+            response = await self.tavily_client.search(query, max_results=3, search_depth="advanced")  # Асинхронный вызов
             logger.info(f"Search query '{query}' completed successfully.")
             return response
         except Exception as e:

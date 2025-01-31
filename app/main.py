@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .api_v1 import router as api_v1_router
-from .src.llm_engine import QwenRequestGPU6, GeminiFlashRequest
+from .src.llm_engine import QwenRequestGPU6, OpenRouterRequest
 from .src.search_engine import AsyncTavilySearch
 from .core.config.base_model import settings
 from .core.config.logger import logger
@@ -22,9 +22,10 @@ async def startup_event():
         # )
         # set_llm(qwen_request)
 
-        gemini_request = GeminiFlashRequest(
+        gemini_request = OpenRouterRequest(
             llm_host="https://openrouter.ai/api/v1",
-            model_name= "qwen/qwen-2.5-7b-instruct",
+            # model_name= "qwen/qwen-2.5-7b-instruct",
+            model_name="anthropic/claude-3-haiku",
             prompt=settings.PROMPT
         )
         set_llm(gemini_request)

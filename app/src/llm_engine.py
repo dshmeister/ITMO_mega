@@ -93,10 +93,10 @@ class QwenRequestGPU6:
             logger.error(f"Error getting response content: {e}")
             raise HTTPBadRequest(text=f"Error getting response content: {e}")
 
-class GeminiFlashRequest:
+class OpenRouterRequest:
     def __init__(self, llm_host: str, model_name: str, prompt: str):
         """
-        Инициализация класса GeminiFlashRequest.
+        Инициализация класса OpenRouterRequest.
 
         :param llm_host: URL OpenRouter API.
         :param model_name: Название модели (например, "google/gemini-flash-1.5-8b").
@@ -105,7 +105,7 @@ class GeminiFlashRequest:
         self.llm_host = llm_host
         self.model_name = model_name
         self.prompt = prompt
-        self.client = OpenAI(base_url=self.llm_host, api_key=settings.GEMINI_API_KEY)
+        self.client = OpenAI(base_url=self.llm_host, api_key=settings.OPENROUTER_API_KEY)
 
     async def _prepare_payload(self, search_results: str, query: str, id: int) -> dict:
         """

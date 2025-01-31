@@ -8,9 +8,7 @@ services:
       - "13001:13001"
     env_file:
       - .env
-#networks:
-#  default:
-#    name: ainergy-net
+
 
 
 
