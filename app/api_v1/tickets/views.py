@@ -8,9 +8,9 @@ import json
 # Initializing APIRouter
 router = APIRouter()
 
-# Default Endpoint for Ticket-Classification
+# Default Endpoint for Query Answers
 @router.post("/api/request", response_model=JSONOutput)
-async def ticket_response(
+async def query_response(
     query: str,
     id: int,
     llm = Depends(get_llm),
