@@ -41,62 +41,73 @@ ITMO_mega/
 │── README.md
 ```
 
-## 📥 Входные и выходные данные
+## 🚀 Запуск LLM с vLLM
 
-### 🔹 Входные параметры (POST `/api/request`)
-```json
-{
-  "query": "Текст запроса с вариантами ответа",
-  "id": 1
+### 🔹 Загрузка модели с Hugging Face
+```bash
+pip install vllm
+huggingface-cli download Qwen/Qwen-14B --local-dir ./models/qwen-14b
+```
+
+### 🔹 Dockerfile для vLLM
+Создайте `Dockerfile`:
+```dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN pip install vllm
+
+COPY models/qwen-14b /models/qwen-14b
+
+CMD ["python3", "-m", "vllm.entrypoints.api_server", "--model", "/models/qwen-14b"]
+```
+
+### 🔹 Запуск vLLM с Docker Compose
+Создайте `docker-compose.yml`:
+```yaml
+version: '3.9'
+services:
+  vllm-server:
+    build: .
+    container_name: vllm_qwen
+    volumes:
+      - ./models/qwen-14b:/models/qwen-14b
+    ports:
+      - "4000:4000"
+```
+Запустите сервер:
+```bash
+docker-compose up -d
+```
+
+## 🌐 Настройка Nginx и DNS
+### 🔹 Регистрация домена
+Чтобы ваш сервис был доступен через доменное имя, вам нужно зарегистрировать домен у любого регистратора. После регистрации необходимо создать `A-запись`, указывающую на IP-адрес вашего сервера.
+
+### 🔹 Конфигурация Nginx
+Пример конфигурации Nginx (`/etc/nginx/sites-available/itmo_query`):
+```nginx
+server {
+    listen 80;
+    server_name itmo-query.example.com;
+
+    location / {
+        proxy_pass http://localhost:13001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
 }
 ```
-- **query** *(string)* — вопрос пользователя, который включает нумерованные варианты ответа.
-- **id** *(integer)* — идентификатор запроса.
-
-### 🔹 Выходные параметры
-```json
-{
-  "id": 1,
-  "answer": 2,
-  "reasoning": "Обоснование ответа, предоставленного моделью.",
-  "sources": [
-    "https://example.com/source1",
-    "https://example.com/source2"
-  ]
-}
+Активация:
+```bash
+ln -s /etc/nginx/sites-available/itmo_query /etc/nginx/sites-enabled/
+systemctl restart nginx
 ```
-- **id** *(integer)* — идентификатор запроса.
-- **answer** *(integer|null)* — номер правильного ответа (если применимо), иначе `null`.
-- **reasoning** *(string)* — объяснение, почему выбран этот ответ.
-- **sources** *(list of strings)* — список источников информации.
-
-## ⚙ Настройка переменных окружения
-Создайте файл `.env` и добавьте следующие параметры:
-```env
-LLM_HOST_URL="http://localhost:4000/v1/chat/completions"
-MODEL_NAME="qwen-14b"
-API_KEY="your_tavily_api_key"
-BEARER_TOKEN="your_secret_token"
-```
-
-## 🛠 Используемые технологии
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Tavily API](https://www.tavily.com/)
-- [Qwen-14B](https://github.com/QwenLM)
-- [Docker](https://www.docker.com/)
-- [GitLab CI/CD](https://docs.gitlab.com/ee/ci/)
-- [Gunicorn](https://gunicorn.org/) + Uvicorn
-- [Logging](https://docs.python.org/3/library/logging.html)
-- [Asyncio](https://docs.python.org/3/library/asyncio.html)
-- [Pydantic](https://pydantic-docs.helpmanual.io/) — валидация данных
-- [Aiohttp](https://docs.aiohttp.org/) — асинхронные HTTP-запросы
-- [Pytest](https://docs.pytest.org/) — тестирование
-
-## 🚀 CI/CD
-В текущей версии проекта **CI/CD не используется**, но подготовлен GitLab CI/CD скрипт, который можно задействовать при необходимости (требуется GitLab Runner).
 
 ## ✍ Автор
 **Волосников Кирилл**, Jun+ MLOps
 
-🎯 **Готов к использованию!** 🚀
+🎯 **Проект готов к использованию :)))) GL HF!** 🚀
 
