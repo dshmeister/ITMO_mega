@@ -27,7 +27,7 @@ async def ticket_response(
 
         logger.info(msg='Processed SUCCESS.')
 
-        
+
         return response_data
 
     except Exception as e:
