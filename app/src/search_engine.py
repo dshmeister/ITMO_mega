@@ -1,8 +1,7 @@
 import asyncio
 import logging
-from aiohttp import ClientSession, ClientResponseError
 from aiohttp.web_exceptions import HTTPBadRequest
-from tavily import TavilyClient
+from tavily import AsyncTavilyClient
 from ..core.config.logger import logger
 from ..core.config.base_model import settings
 
@@ -13,7 +12,7 @@ class AsyncTavilySearch:
 
         :param api_key: API ключ для Tavily.
         """
-        self.tavily_client = TavilyClient(api_key=settings.API_KEY)
+        self.tavily_client = AsyncTavilyClient(api_key=settings.API_KEY)  # Используем Async-клиент
 
     async def search(self, query: str) -> dict:
         """
@@ -23,10 +22,8 @@ class AsyncTavilySearch:
         :return: Ответ от API в формате JSON.
         """
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(None, self.tavily_client.search, query)
+            response = await self.tavily_client.search(query)  # Асинхронный вызов
             logger.info(f"Search query '{query}' completed successfully.")
-            print(response)
             return response
         except Exception as e:
             logger.error(f"Error executing search query '{query}': {e}")
@@ -41,10 +38,10 @@ class AsyncTavilySearch:
         """
         try:
             text = ''
-            for result in response['results']:
-                text += f'____URL: {result["url"]} Title: {result["title"]} Content: {result["content"]}'
+            for result in response.get("results", []):
+                text += f'____URL: {result.get("url", "N/A")} Title: {result.get("title", "No title")} Content: {result.get("content", "No content")}\n'
             logger.info("Search results formatted successfully.")
-            return text
+            return text.strip()
         except KeyError as e:
             logger.error(f"Key error in search results: {e}")
             raise HTTPBadRequest(text=f"Key error in search results: {e}")
@@ -60,8 +57,8 @@ class AsyncTavilySearch:
         :return: Строка с отформатированными результатами.
         """
         try:
-            response = await self.search(query)
-            return await self.format_search_results(response)
+            response = await self.search(query)  # Делаем поиск
+            return await self.format_search_results(response)  # Форматируем результаты
         except Exception as e:
             logger.error(f"Error in tavily_request for query '{query}': {e}")
             raise HTTPBadRequest(text=f"Error in tavily_request: {e}")

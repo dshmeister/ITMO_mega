@@ -11,15 +11,15 @@ router = APIRouter()
 # Default Endpoint for Ticket-Classification
 @router.post("/api/request", response_model=JSONOutput)
 async def ticket_response(
-    input: str,
+    query: str,
     id: int,
     llm = Depends(get_llm),
     search = Depends(get_search)
 ):
     try:
-        logger.info(msg=f"Processing query: {input}")
+        logger.info(msg=f"Processing query: {query}")
 
-        response_llm = await process_query(input, id)
+        response_llm = await process_query(query, id)
         response_corrected = r"{}".format(response_llm)
 
         # Преобразуем в JSON

@@ -18,6 +18,7 @@ gunicorn
 pydantic-settings
 pydantic_core
 Pygments
+openai
 python-dotenv
 python-multipart
 urllib3

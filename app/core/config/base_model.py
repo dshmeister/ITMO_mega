@@ -4,9 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .llm_config.prompts import PROMPT
 
 
-LLM_HOST = os.getenv('LLM_HOST_URL')
-MODEL_NAME = os.getenv('MODEL_NAME')
-API_KEY = os.getenv('API_KEY')
+# LLM_HOST = os.getenv('LLM_HOST_URL')
+# MODEL_NAME = os.getenv('MODEL_NAME')
+# API_KEY = os.getenv('API_KEY')
+# GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 
 class QuerySettings(BaseModel):
@@ -15,6 +16,7 @@ class QuerySettings(BaseModel):
     MODEL_NAME: str = os.getenv('MODEL_NAME')
     # API_KEY
     API_KEY: str = os.getenv('API_KEY')
+    GEMINI_API_KEY: str = os.getenv('GEMINI_API_KEY')
     # Prompts
     PROMPT: str = PROMPT
 

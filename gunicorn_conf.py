@@ -2,7 +2,7 @@ import json
 import multiprocessing
 import os
 
-workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
+workers_per_core_str = os.getenv("WORKERS_PER_CORE", "4")
 max_workers_str = os.getenv("MAX_WORKERS")
 use_max_workers = None
 if max_workers_str:
@@ -34,7 +34,7 @@ errorlog_var = os.getenv("ERROR_LOG", "-")
 use_errorlog = errorlog_var or None
 graceful_timeout_str = os.getenv("GRACEFUL_TIMEOUT", "720")
 timeout_str = os.getenv("TIMEOUT", "720")
-keepalive_str = os.getenv("KEEP_ALIVE", "15")
+keepalive_str = os.getenv("KEEP_ALIVE", "30")
 
 # Gunicorn config variables
 loglevel = use_loglevel
@@ -65,3 +65,4 @@ log_data = {
     "port": port,
 }
 print(json.dumps(log_data))
+
